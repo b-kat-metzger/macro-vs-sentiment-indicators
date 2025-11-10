@@ -43,10 +43,10 @@ Some Sentiment-Based Indicators we will use in this project are the VIX, S&P tra
 │ <br>
 ├── visuals/                       Visualizations & graphs used in final report <br>
 │<br>
-└── report/			   Final report documents <br>
-    ├── ProjectProgressReport.pdf <br>
-    ├── final_report.pdf	       To be added when report is written <br>
-    └── presentation_slides.pptx       To be added when slides are created <br>
+├── report/			   Final report documents <br> 
+│    ├── ProjectProgressReport.pdf <br>
+│    ├── final_report.pdf	       To be added when report is written <br>
+│    └── presentation_slides.pptx       To be added when slides are created <br>
 
 ### Project Members
 - Hank Corrion
