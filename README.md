@@ -48,6 +48,21 @@ Some Sentiment-Based Indicators we will use in this project are the VIX, S&P tra
 │    ├── final_report.pdf	       To be added when report is written <br>
 │    └── presentation_slides.pptx       To be added when slides are created <br>
 
+### Project Setup
+* Create a virtual environment and install dependancies
+```
+python3 -m venv myenv
+python3 pip install -r requirements.txt
+```
+* Create an environment file for the FRED API Key
+```
+touch .env
+```
+* Open the environment file and paste your indidvidual FRED API Key that can be registered for free at https://fredaccount.stlouisfed.org/
+```
+FRED_API_KEY=YOURKEY
+```
+
 ### Project Members
 - Hank Corrion
 - Josh Santiago
