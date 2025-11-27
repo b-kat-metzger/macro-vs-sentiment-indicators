@@ -8,6 +8,7 @@ setup:
 
 fetch:
 	$(PYTHON) src/data/fetch_data.py
+	$(PYTHON) src/data/clean_data.py
 
 clean:
 	rm -rf data/raw/*
