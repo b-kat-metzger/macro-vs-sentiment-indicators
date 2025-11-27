@@ -5,6 +5,8 @@ setup:
 	$(PYTHON) -m venv msienv
 	$(PYTHON) -m pip install -r requirements.txt
 	@echo "Virtual environment initialized."
+	source msienv/bin/activate
+	@echo "Virtual environment activated."
 
 fetch:
 	$(PYTHON) src/data/fetch_data.py
@@ -12,3 +14,4 @@ fetch:
 
 clean:
 	rm -rf data/raw/*
+	rm -rf data/clean/*
