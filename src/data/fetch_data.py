@@ -9,7 +9,7 @@ from fredapi import Fred
 from dotenv import load_dotenv, find_dotenv
 
 START = "1990-01-01"
-OUTDIR = Path("data_raw")
+OUTDIR = Path("data","raw")
 OUTDIR.mkdir(exist_ok=True)
 
 env_path = find_dotenv(usecwd=True) or (Path(__file__).parent / ".env")
@@ -52,8 +52,9 @@ def pull_yf(symbol: str) -> pd.DataFrame:
     return df  # keep raw OHLC, Adj Close, Volume
 
 for tkr, desc in YF_TICKERS.items():
+    tkr_name = tkr.replace('^','')
     df = pull_yf(tkr)
-    df.to_csv(OUTDIR / f"yf_{tkr.replace('^','')}.csv")
-    print(f"Saved Yahoo {tkr} -> {OUTDIR/f'yf_{tkr.replace('^','')}.csv'}  ({desc})")
+    df.to_csv(OUTDIR / f"yf_{tkr_name}.csv")
+    print(f"Saved Yahoo {tkr_name} -> {OUTDIR/f'yf_{tkr_name}'}.csv ({desc})")
 
 print("\nDone. Raw CSVs are in:", OUTDIR.resolve())
