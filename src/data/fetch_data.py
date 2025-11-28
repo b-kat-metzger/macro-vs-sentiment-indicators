@@ -220,7 +220,7 @@ def plot_time_series(full_df: pd.DataFrame):
     plt.show()
 
 
-# ---- MAIN ----
+# ---- FETCH AND PLOT RAW DATA ----
 def fetch_data_and_plot():
     # Pull and save raw data
     save_raw_data()
@@ -235,7 +235,3 @@ def fetch_data_and_plot():
     print(full_df.tail())
     plot_time_series(full_df)
     print("\nDone. Raw CSVs are in:", OUTDIR.resolve())
-
-
-if __name__ == "__main__":
-    main()
