@@ -177,3 +177,65 @@ def build_merged_df() -> pd.DataFrame:
             full_df = full_df.drop(columns=cols_to_drop)
 
     return full_df
+
+
+
+# ---- PLOT ----
+def plot_time_series(full_df: pd.DataFrame):
+    plot_df = full_df.select_dtypes(include=[np.number]).copy()
+    plot_df = plot_df.dropna(axis=1, how="all")
+
+    TITLE_MAP = {sid: f"{desc} ({sid})" for sid, desc in FRED_SERIES.items()}
+    TITLE_MAP.update({
+        "GSPC": "S&P 500 index adj close (GSPC)",
+        "VIX_Close": "VIX spot close (VIX_Close)",
+        "rv_21d": "21-day realized volatility (rv_21d)",
+    })
+
+    if plot_df.empty:
+        print("No numeric columns available to plot.")
+        return
+
+    cols = list(plot_df.columns)
+    n = len(cols)
+    ncols = 3
+    nrows = math.ceil(n / ncols)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 3 * nrows), sharex=True)
+    axes = axes.flatten()
+
+    for ax, col in zip(axes, cols):
+        series = plot_df[col].dropna()
+        if series.empty:
+            ax.set_visible(False)
+            continue
+        ax.plot(series.index, series.values)
+        ax.set_title(TITLE_MAP.get(col, col), fontsize=10)
+        ax.grid(True, alpha=0.3)
+
+    for ax in axes[len(cols):]:
+        ax.set_visible(False)
+
+    fig.suptitle("Time Series of All Indicators", fontsize=14, y=0.995)
+    fig.tight_layout()
+    plt.show()
+
+
+# ---- MAIN ----
+def fetch_data_and_plot():
+    # Pull and save raw data
+    save_raw_data()
+
+    # Compute realized vol from saved GSPC CSV
+    compute_realized_vol()
+
+    # Merge CSVs and plot
+    full_df = build_merged_df()
+    print("Merged DataFrame:")
+    print(full_df.head())
+    print(full_df.tail())
+    plot_time_series(full_df)
+    print("\nDone. Raw CSVs are in:", OUTDIR.resolve())
+
+
+if __name__ == "__main__":
+    main()
