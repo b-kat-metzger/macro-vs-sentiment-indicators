@@ -51,6 +51,7 @@ DFS = [
     GSPC[["Open","High","Low","Close","Adj Close", "Volume"]].add_prefix("SP500_"),
     VIX[["Open","High","Low","Close","Adj Close", "Volume"]].add_prefix("VIX_"),
 ]
+
 full_df = pd.concat(DFS,axis=1)
 full_df.index.name = "Date"
 full_df = full_df.round(2)  # round to 2 decimal places
@@ -60,4 +61,12 @@ sp500_cols = [col for col in full_df.columns if col.startswith("SP500_")]
 vix_cols = [col for col in full_df.columns if col.startswith("VIX_")]
 full_df = full_df.dropna(subset=sp500_cols + vix_cols)
 
+MACRO_FEATURES = ["GDPC1", "CPIAUCSL", "UNRATE", "ICSA", "FEDFUNDS"]
+SENTIMENT_FEATURES = ["DGS10", "DGS3MO", "NEWS_SENTIMENT"] + sp500_cols + vix_cols
+
+macro_df = full_df[MACRO_FEATURES]
+sentiment_df = full_df[SENTIMENT_FEATURES]
+
+macro_df.to_csv(OUTDIR/"macro_features.csv")
+sentiment_df.to_csv(OUTDIR/"sentiment_features.csv")
 full_df.to_csv(OUTDIR/"cleaned_data.csv")
