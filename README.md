@@ -19,9 +19,11 @@ Some Sentiment-Based Indicators we will use in this project are the VIX, S&P tra
 ├── .gitignore           <br>
 │
 ├── data/ <br>
-│   └── raw/ -- Unmodified downloaded data <br>  	
+│   ├── raw/ -- Unmodified downloaded data <br>
+│   ├── cleaned/ -- Processed downloaded data <br>  
+│   └── static -- Downloaded data from another model; **must be in repo** <br>
 │<br>
-├── notebooks/ -- Contains all testing and developing of models using jupyter notebook <br>
+├── notebooks/ -- Contains all testing and developing of models using jupyter notebook <b*r>
 │   	<br>
 │   	<br>
 ├── src/ -- Python modules <br>
