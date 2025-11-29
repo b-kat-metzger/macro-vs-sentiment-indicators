@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 # ---- CONFIG ----
 START = "1990-01-01"
-OUTDIR = Path("data_raw")
+OUTDIR = Path("data/raw")
 OUTDIR.mkdir(exist_ok=True)
 
 FRED_SERIES = {
@@ -235,3 +235,6 @@ def fetch_data_and_plot():
     print(full_df.tail())
     plot_time_series(full_df)
     print("\nDone. Raw CSVs are in:", OUTDIR.resolve())
+
+if __name__ == "__main__":
+    fetch_data_and_plot()
