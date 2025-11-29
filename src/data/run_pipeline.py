@@ -6,6 +6,7 @@ from data_pipeline import (
     save_merged_df,
     standardize_to_monthly,
     clean_feature_frame,
+    prune_to_final_features,
     save_standardized_dataset,
 )
 
@@ -31,12 +32,17 @@ def run_pipeline():
     if monthly is None or monthly.empty:
         raise RuntimeError("standardize_to_monthly() returned empty or None.")
 
-    print("\n=== STEP 6: Cleaning feature frame (trim early NA + last partial month) ===")
-    final_df = clean_feature_frame(monthly)
-    if final_df is None or final_df.empty:
+    print("\n=== STEP 6: Cleaning feature frame ===")
+    cleaned = clean_feature_frame(monthly)
+    if cleaned is None or cleaned.empty:
         raise RuntimeError("clean_feature_frame() returned empty or None.")
 
-    print("\n=== STEP 7: Saving final cleaned dataset ===")
+    print("\n=== STEP 7: Pruning to final 18 features ===")
+    final_df = prune_to_final_features(cleaned)
+    if final_df is None or final_df.empty:
+        raise RuntimeError("prune_to_final_features() returned empty or None.")
+
+    print("\n=== STEP 8: Saving final cleaned dataset ===")
     save_standardized_dataset(final_df)
 
     print("\n=== FINAL DATAFRAME SUMMARY ===")
