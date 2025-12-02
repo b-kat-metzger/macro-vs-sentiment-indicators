@@ -52,8 +52,8 @@ def run_pipeline():
     final_df.info()
 
     print("\nPipeline complete.")
-    print("Raw CSVs → data_raw/")
-    print("Final cleaned → data_cleaned/standardized_monthly_data.csv")
+    print("Raw CSVs → data/raw/")
+    print("Final cleaned → data/clean/standardized_monthly_data.csv")
 
 
 if __name__ == "__main__":

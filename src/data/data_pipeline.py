@@ -16,8 +16,8 @@ from dotenv import load_dotenv, find_dotenv
 
 START_DATE = "1992-10-01"
 
-RAW_DIR = Path("data_raw")
-CLEAN_DIR = Path("data_cleaned")
+RAW_DIR = Path("data", "raw")
+CLEAN_DIR = Path("data", "clean")
 
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 CLEAN_DIR.mkdir(parents=True, exist_ok=True)
@@ -228,7 +228,7 @@ def build_merged_df() -> pd.DataFrame:
 
     files = sorted(files)
     if not files:
-        raise FileNotFoundError("No valid CSVs found in data_raw/")
+        raise FileNotFoundError("No valid CSVs found in data/raw/")
 
     full_df = None
     for p in files:
