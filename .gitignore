@@ -1,7 +1,7 @@
 .env
 msienv/
-data/raw
-data/clean
-data/features
+data/raw/
+data/clean/
+data/features/
 src/data/__pycache__/
 src/models/__pycache__/
