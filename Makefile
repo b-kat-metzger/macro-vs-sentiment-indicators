@@ -9,6 +9,9 @@ setup:
 fetch:
 	$(PYTHON) src/data/run_pipeline.py
 
+visualize:
+	$(PYTHON) src/utils/charting.py
+
 clean:
 	rm -rf data/raw/*
 	rm -rf data/clean/*

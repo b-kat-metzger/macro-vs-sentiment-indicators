@@ -1,6 +1,6 @@
 """
-Visualization utilities for macro vs sentiment indicators analysis.
-Creates publication-quality charts for macroeconomic and sentiment-based features.
+Visualization utilities for economic vs financial indicators analysis.
+Creates publication-quality charts for economic and financial features.
 """
 
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ from typing import List, Optional, Tuple
 
 
 # Feature groupings
-MACRO_FEATURES = [
+ECO_FEATURES = [
     "ECO_dCPIAUCSL",
     "ECO_dFEDFUNDS",
     "ECO_dINDPRO",
@@ -22,11 +22,9 @@ MACRO_FEATURES = [
     "FRED_ICSA",
     "FRED_UMCSENT",
     "FRED_RSAFS",
-    "FIN_yield_curve_slope",
-    "FIN_credit_spread",
 ]
 
-SENTIMENT_FEATURES = [
+FINANCIAL_FEATURES = [
     "FIN_vix_level",
     "FIN_dVIX",
     "FIN_gspc_ret_lag1",
@@ -34,6 +32,8 @@ SENTIMENT_FEATURES = [
     "FIN_mom_6m",
     "FIN_gspc_monthly_vol",
     "FIN_rv30",
+    "FIN_yield_curve_slope",
+    "FIN_credit_spread",
 ]
 
 
@@ -48,7 +48,7 @@ def normalize_series(series: pd.Series) -> pd.Series:
     return (series - series.mean()) / series.std()
 
 
-def plot_macro_features(df: pd.DataFrame, output_dir: Optional[Path] = None) -> None:
+def plot_eco_features(df: pd.DataFrame, output_dir: Optional[Path] = None) -> None:
     """
     Create a multi-panel visualization of macroeconomic indicators.
     
@@ -60,7 +60,7 @@ def plot_macro_features(df: pd.DataFrame, output_dir: Optional[Path] = None) -> 
         Directory to save figures. If None, displays interactively.
     """
     # Filter to available macro features
-    available_macro = [f for f in MACRO_FEATURES if f in df.columns]
+    available_macro = [f for f in ECO_FEATURES if f in df.columns]
     
     if not available_macro:
         print("No macroeconomic features found in data.")
@@ -96,18 +96,18 @@ def plot_macro_features(df: pd.DataFrame, output_dir: Optional[Path] = None) -> 
     
     if output_dir:
         output_dir.mkdir(parents=True, exist_ok=True)
-        filepath = output_dir / "macro_indicators.png"
+        filepath = output_dir / "eco_indicators.png"
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
-        print(f"Saved macro indicators chart to {filepath}")
+        print(f"Saved economic indicators chart to {filepath}")
     else:
         plt.show()
     
     plt.close()
 
 
-def plot_sentiment_features(df: pd.DataFrame, output_dir: Optional[Path] = None) -> None:
+def plot_financial_features(df: pd.DataFrame, output_dir: Optional[Path] = None) -> None:
     """
-    Create a multi-panel visualization of sentiment-based indicators.
+    Create a multi-panel visualization of financial indicators.
     
     Parameters:
     -----------
@@ -116,26 +116,26 @@ def plot_sentiment_features(df: pd.DataFrame, output_dir: Optional[Path] = None)
     output_dir : Path, optional
         Directory to save figures. If None, displays interactively.
     """
-    # Filter to available sentiment features
-    available_sentiment = [f for f in SENTIMENT_FEATURES if f in df.columns]
+    # Filter to available financial features
+    available_financial = [f for f in FINANCIAL_FEATURES if f in df.columns]
     
-    if not available_sentiment:
-        print("No sentiment features found in data.")
+    if not available_financial:
+        print("No financial features found in data.")
         return
     
     # Create 2x4 subplots
-    n_features = len(available_sentiment)
+    n_features = len(available_financial)
     n_cols = 4
     n_rows = (n_features + n_cols - 1) // n_cols
     
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(18, 4 * n_rows))
     axes = axes.flatten()
     
-    for idx, feature in enumerate(available_sentiment):
+    for idx, feature in enumerate(available_financial):
         ax = axes[idx]
         data = df[feature].dropna()
         
-        # Use different color for sentiment
+        # Use different color for financial indicators
         ax.plot(data.index, data.values, linewidth=1.5, color='darkred')
         ax.fill_between(data.index, data.values, alpha=0.3, color='darkred')
         ax.set_title(feature, fontsize=12, fontweight='bold')
@@ -147,16 +147,16 @@ def plot_sentiment_features(df: pd.DataFrame, output_dir: Optional[Path] = None)
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=45)
     
     # Hide unused subplots
-    for idx in range(len(available_sentiment), len(axes)):
+    for idx in range(len(available_financial), len(axes)):
         axes[idx].set_visible(False)
     
     plt.tight_layout()
     
     if output_dir:
         output_dir.mkdir(parents=True, exist_ok=True)
-        filepath = output_dir / "sentiment_indicators.png"
+        filepath = output_dir / "financial_indicators.png"
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
-        print(f"Saved sentiment indicators chart to {filepath}")
+        print(f"Saved financial indicators chart to {filepath}")
     else:
         plt.show()
     
@@ -165,7 +165,7 @@ def plot_sentiment_features(df: pd.DataFrame, output_dir: Optional[Path] = None)
 
 def plot_normalized_comparison(df: pd.DataFrame, output_dir: Optional[Path] = None) -> None:
     """
-    Plot normalized macroeconomic vs sentiment indicators on same scale for comparison.
+    Plot normalized macroeconomic vs financial indicators on same scale for comparison.
     
     Parameters:
     -----------
@@ -174,11 +174,11 @@ def plot_normalized_comparison(df: pd.DataFrame, output_dir: Optional[Path] = No
     output_dir : Path, optional
         Directory to save figures. If None, displays interactively.
     """
-    available_macro = [f for f in MACRO_FEATURES if f in df.columns]
-    available_sentiment = [f for f in SENTIMENT_FEATURES if f in df.columns]
+    available_macro = [f for f in ECO_FEATURES if f in df.columns]
+    available_financial = [f for f in FINANCIAL_FEATURES if f in df.columns]
     
-    if not available_macro or not available_sentiment:
-        print("Need both macro and sentiment features for comparison.")
+    if not available_macro or not available_financial:
+        print("Need both macro and financial features for comparison.")
         return
     
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10))
@@ -188,18 +188,18 @@ def plot_normalized_comparison(df: pd.DataFrame, output_dir: Optional[Path] = No
         normalized = normalize_series(df[feature])
         ax1.plot(normalized.index, normalized.values, label=feature, linewidth=1, alpha=0.7)
     
-    ax1.set_title('Normalized Macroeconomic Indicators (Lagging)', fontsize=14, fontweight='bold')
+    ax1.set_title('Normalized Economic Indicators', fontsize=14, fontweight='bold')
     ax1.set_ylabel('Normalized Value (Z-score)')
     ax1.legend(loc='upper left', fontsize=8, ncol=2)
     ax1.grid(True, alpha=0.3)
     ax1.axhline(0, color='black', linestyle='--', linewidth=0.8, alpha=0.5)
-    
-    # Normalize and plot sentiment
-    for feature in available_sentiment:
+
+    # Normalize and plot financial indicators
+    for feature in available_financial:
         normalized = normalize_series(df[feature])
         ax2.plot(normalized.index, normalized.values, label=feature, linewidth=1, alpha=0.7)
-    
-    ax2.set_title('Normalized Sentiment-Based Indicators (Leading)', fontsize=14, fontweight='bold')
+
+    ax2.set_title('Normalized Financial Indicators', fontsize=14, fontweight='bold')
     ax2.set_xlabel('Date')
     ax2.set_ylabel('Normalized Value (Z-score)')
     ax2.legend(loc='upper left', fontsize=8, ncol=2)
@@ -227,7 +227,7 @@ def plot_normalized_comparison(df: pd.DataFrame, output_dir: Optional[Path] = No
 
 def plot_correlation_heatmap(df: pd.DataFrame, output_dir: Optional[Path] = None) -> None:
     """
-    Create a correlation heatmap of macro and sentiment features.
+    Create a correlation heatmap of macro and financial features.
     
     Parameters:
     -----------
@@ -236,9 +236,9 @@ def plot_correlation_heatmap(df: pd.DataFrame, output_dir: Optional[Path] = None
     output_dir : Path, optional
         Directory to save figures. If None, displays interactively.
     """
-    available_macro = [f for f in MACRO_FEATURES if f in df.columns]
-    available_sentiment = [f for f in SENTIMENT_FEATURES if f in df.columns]
-    all_features = available_macro + available_sentiment
+    available_macro = [f for f in ECO_FEATURES if f in df.columns]
+    available_financial = [f for f in FINANCIAL_FEATURES if f in df.columns]
+    all_features = available_macro + available_financial
     
     if len(all_features) < 2:
         print("Insufficient features for correlation analysis.")
@@ -268,11 +268,11 @@ def plot_correlation_heatmap(df: pd.DataFrame, output_dir: Optional[Path] = None
             text = ax.text(j, i, f'{corr_matrix.iloc[i, j]:.2f}',
                           ha="center", va="center", color="black", fontsize=7)
     
-    # Add visual separation between macro and sentiment
+    # Add visual separation between macro and financial features
     ax.axhline(len(available_macro) - 0.5, color='black', linewidth=2)
     ax.axvline(len(available_macro) - 0.5, color='black', linewidth=2)
     
-    ax.set_title('Feature Correlation Matrix: Macroeconomic vs Sentiment Indicators', 
+    ax.set_title('Feature Correlation Matrix: Economic vs Financial Indicators', 
                 fontsize=14, fontweight='bold', pad=20)
     
     plt.tight_layout()
@@ -299,17 +299,17 @@ def plot_summary_statistics(df: pd.DataFrame, output_dir: Optional[Path] = None)
     output_dir : Path, optional
         Directory to save figures. If None, displays interactively.
     """
-    available_macro = [f for f in MACRO_FEATURES if f in df.columns]
-    available_sentiment = [f for f in SENTIMENT_FEATURES if f in df.columns]
+    available_macro = [f for f in ECO_FEATURES if f in df.columns]
+    available_financial = [f for f in FINANCIAL_FEATURES if f in df.columns]
     
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     
     # Mean values
     ax = axes[0, 0]
     means_macro = df[available_macro].mean()
-    means_sentiment = df[available_sentiment].mean()
-    all_means = pd.concat([means_macro, means_sentiment])
-    colors = ['steelblue'] * len(available_macro) + ['darkred'] * len(available_sentiment)
+    means_financial = df[available_financial].mean()
+    all_means = pd.concat([means_macro, means_financial])
+    colors = ['steelblue'] * len(available_macro) + ['darkred'] * len(available_financial)
     all_means.plot(kind='barh', ax=ax, color=colors)
     ax.set_title('Mean Values', fontweight='bold')
     ax.set_xlabel('Mean')
@@ -317,8 +317,8 @@ def plot_summary_statistics(df: pd.DataFrame, output_dir: Optional[Path] = None)
     # Standard deviation
     ax = axes[0, 1]
     std_macro = df[available_macro].std()
-    std_sentiment = df[available_sentiment].std()
-    all_std = pd.concat([std_macro, std_sentiment])
+    std_financial = df[available_financial].std()
+    all_std = pd.concat([std_macro, std_financial])
     all_std.plot(kind='barh', ax=ax, color=colors)
     ax.set_title('Standard Deviation', fontweight='bold')
     ax.set_xlabel('Std Dev')
@@ -326,8 +326,8 @@ def plot_summary_statistics(df: pd.DataFrame, output_dir: Optional[Path] = None)
     # Count of non-null values
     ax = axes[1, 0]
     counts_macro = df[available_macro].notna().sum()
-    counts_sentiment = df[available_sentiment].notna().sum()
-    all_counts = pd.concat([counts_macro, counts_sentiment])
+    counts_financial = df[available_financial].notna().sum()
+    all_counts = pd.concat([counts_macro, counts_financial])
     all_counts.plot(kind='barh', ax=ax, color=colors)
     ax.set_title('Non-Null Observations', fontweight='bold')
     ax.set_xlabel('Count')
@@ -335,9 +335,9 @@ def plot_summary_statistics(df: pd.DataFrame, output_dir: Optional[Path] = None)
     # Data availability over time
     ax = axes[1, 1]
     availability_macro = df[available_macro].notna().sum(axis=1)
-    availability_sentiment = df[available_sentiment].notna().sum(axis=1)
+    availability_financial = df[available_financial].notna().sum(axis=1)
     ax.plot(availability_macro.index, availability_macro.values, label='Macro Features', linewidth=2, color='steelblue')
-    ax.plot(availability_sentiment.index, availability_sentiment.values, label='Sentiment Features', linewidth=2, color='darkred')
+    ax.plot(availability_financial.index, availability_financial.values, label='Financial Features', linewidth=2, color='darkred')
     ax.set_title('Feature Availability Over Time', fontweight='bold')
     ax.set_xlabel('Date')
     ax.set_ylabel('Number of Non-Null Features')
@@ -379,8 +379,8 @@ def generate_all_visualizations(data_path: Path, output_dir: Optional[Path] = No
     print()
     
     print("Generating visualizations...")
-    plot_macro_features(df, output_dir)
-    plot_sentiment_features(df, output_dir)
+    plot_eco_features(df, output_dir)
+    plot_financial_features(df, output_dir)
     plot_normalized_comparison(df, output_dir)
     plot_correlation_heatmap(df, output_dir)
     plot_summary_statistics(df, output_dir)
