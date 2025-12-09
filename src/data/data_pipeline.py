@@ -1,4 +1,4 @@
-# FRED API KEY REQUIRED IN .ENV
+# FRED API KEY IS REQUIRED IN .ENV
 
 import os
 from pathlib import Path
@@ -10,9 +10,7 @@ import yfinance as yf
 from fredapi import Fred
 from dotenv import load_dotenv, find_dotenv
 
-################################################################################
-# INITIAL CONFIG
-################################################################################
+# Initial config
 
 START_DATE = "1992-10-01"
 
@@ -24,10 +22,9 @@ CLEAN_DIR.mkdir(parents=True, exist_ok=True)
 
 # FRED series data to pull
 FRED_SERIES: Dict[str, str] = {
-
-    # PRIMARY ECONOMIC INDICATORS:
-
-
+    
+    # ECONOMIC INDICATORS:
+    
     # Labor market (2)
     "UNRATE": "Unemployment Rate (m)",
     "ICSA": "Initial Jobless Claims (w)",
@@ -48,7 +45,7 @@ FRED_SERIES: Dict[str, str] = {
     "PERMIT": "Building Permits (m)",
 
 
-    # FINANCIAL / SUPPORT SERIES:
+    # FINANCIAL INDICATORS:
 
     "BAA": "Moody's BAA Corporate Bond Yield (d)",  # for credit spread
     "DGS10": "10y Treasury Yield (d)",              # for slope + credit spread
@@ -88,9 +85,7 @@ FINAL_FIN_FEATURES: List[str] = [
 
 FINAL_FEATURES = FINAL_ECON_FEATURES + FINAL_FIN_FEATURES
 
-########################################
-# ENV + FRED
-
+# .env + FRED
 def load_api_key() -> str:
     env_path = find_dotenv(usecwd=True) or (Path(__file__).parent / ".env")
     load_dotenv(env_path)
@@ -103,9 +98,7 @@ def load_api_key() -> str:
 def get_fred_client() -> Fred:
     return Fred(api_key=load_api_key())
 
-########################################
-# RAW DATA PULL
-
+# Raw data
 def pull_fred_series(series_id: str, client: Fred) -> pd.DataFrame:
     s = client.get_series(series_id)
     s.index = pd.to_datetime(s.index)
@@ -139,14 +132,8 @@ def save_raw_fred_and_yf(client: Fred) -> None:
         df.to_csv(path)
         print(f"Saved Yahoo {symbol} -> {path} ({desc})")
 
-########################################
-# REALIZED VOLATILITY (30D → MONTHLY)
-
+# Realized volatility calculation
 def compute_realized_vol(window: int = 30, annual_factor: float = np.sqrt(252)) -> Path:
-    """
-    Compute 30-day realized volatility from daily GSPC log returns,
-    then take end-of-month values to align with monthly macro data.
-    """
     gspc_path = RAW_DIR / "yf_GSPC.csv"
     if not gspc_path.exists():
         raise FileNotFoundError("Missing yf_GSPC.csv. Run data pull first.")
@@ -176,8 +163,7 @@ def compute_realized_vol(window: int = 30, annual_factor: float = np.sqrt(252)) 
     print(f"Saved monthly realized volatility (30d) -> {rv_path}")
     return rv_path
 
-########################################
-# GENERIC CSV LOADER
+# Generic CSV loader
 def load_csv(path: Path) -> pd.DataFrame:
     stem = path.stem
 
@@ -205,9 +191,6 @@ def load_csv(path: Path) -> pd.DataFrame:
 ########################################
 # MERGE RAW CSVs
 def build_merged_df() -> pd.DataFrame:
-    """
-    Merge all raw CSVs into a single daily/mixed-frequency DataFrame.
-    """
     valid_fred_stems = {f"fred_{sid}" for sid in FRED_SERIES.keys()}
     valid_yf_stems = {f"yf_{symbol.replace('^','')}" for symbol in YF_TICKERS.keys()}
 
@@ -259,17 +242,8 @@ def save_merged_df(full_df: pd.DataFrame) -> Path:
     print(f"Merged DataFrame saved to {merged_path}")
     return merged_path
 
-########################################
-# STANDARDIZATION TO MONTHLY
+# Standardization of time series data to monthly
 def standardize_to_monthly(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Convert mixed-frequency data (daily, weekly, monthly) to an end-of-month dataset.
-
-    - GSPC/VIX: monthly return, vol, average, level
-    - FRED/macro: last observation per month
-    - rv_30d: already monthly; preserved as-is
-    - Then add derived econ + financial features
-    """
     df = df.copy()
     df.index = pd.to_datetime(df.index, errors="coerce")
     df = df[df.index.notna()]
@@ -317,8 +291,7 @@ def standardize_to_monthly(df: pd.DataFrame) -> pd.DataFrame:
 
     return monthly_data
 
-########################################
-# DERIVED FEATURES (MACRO + FINANCIAL)
+# Derived features
 def add_derived_features(monthly_df: pd.DataFrame) -> pd.DataFrame:
     df = monthly_df.copy()
 
@@ -358,36 +331,25 @@ def add_derived_features(monthly_df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-########################################
-# SAVE STANDARDIZED DATASET
 def save_standardized_dataset(df: pd.DataFrame, filename: str = "standardized_monthly_data.csv") -> Path:
     out_path = CLEAN_DIR / filename
     df.to_csv(out_path)
     print(f"Standardized monthly dataset saved to {out_path}")
     return out_path
 
-
-########################################
-# FINAL DATA CLEANING: TRIM EARLY NAs + LAST PARTIAL MONTH
+# Trim data at start and for final incomplete month
 def clean_feature_frame(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Clean standardized monthly data:
-      - Trim early rows until required features have begun
-      - Drop the final month if incomplete
-    """
     if df is None or df.empty:
         print("clean_feature_frame(): received empty DataFrame.")
         return df
 
     cleaned = df.copy()
 
-    # Required feature columns = all FRED_, ECO_, FIN_
     required_cols = [c for c in cleaned.columns if c.startswith(("FRED_", "ECO_", "FIN_"))]
 
     if not required_cols:
         print("clean_feature_frame(): no required feature columns found.")
         return cleaned
-
 
     # Trim begining rows until features are consistently reported
     feature_mask = cleaned[required_cols].notna().any(axis=1)
@@ -407,8 +369,7 @@ def clean_feature_frame(df: pd.DataFrame) -> pd.DataFrame:
     return cleaned
 
 
-########################################
-# FINAL FEATURE PRUNING
+# Final feature set pruning (18 features - 9 econ, 9 fin)
 def prune_to_final_features(df: pd.DataFrame) -> pd.DataFrame:
     missing = [f for f in FINAL_FEATURES if f not in df.columns]
     if missing:
