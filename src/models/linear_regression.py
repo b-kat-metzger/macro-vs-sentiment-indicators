@@ -213,7 +213,7 @@ def plot_results(data, macro_results, sentiment_results, output_dir: Path = None
     output_dir : Path, optional
         Directory to save figures
     """
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
     
     # Extract test data
     y_test = data['y'].iloc[data['test_idx']]
@@ -222,10 +222,11 @@ def plot_results(data, macro_results, sentiment_results, output_dir: Path = None
     test_dates = data['y'].index[data['test_idx']]
     
     # Plot 1: Economic model - Actual vs Predicted
-    ax = axes[0, 0]
+    ax = axes[0]
     ax.plot(test_dates, y_test.values, 'o-', label='Actual', linewidth=2, markersize=4)
     ax.plot(test_dates, y_macro_pred, 's--', label='Predicted', linewidth=2, markersize=4, alpha=0.7)
-    ax.set_title('Economic Model: Actual vs Predicted', fontweight='bold')
+    ax.set_title('Economic: Actual vs Predicted', fontweight='bold')
+    ax.set_xlabel('Date')
     ax.set_ylabel('S&P 500 Monthly Return')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -233,47 +234,48 @@ def plot_results(data, macro_results, sentiment_results, output_dir: Path = None
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=45)
     
     # Plot 2: Financial model - Actual vs Predicted
-    ax = axes[0, 1]
+    ax = axes[1]
     ax.plot(test_dates, y_test.values, 'o-', label='Actual', linewidth=2, markersize=4)
     ax.plot(test_dates, y_sentiment_pred, 's--', label='Predicted', linewidth=2, markersize=4, alpha=0.7, color='orange')
-    ax.set_title('Financial Model: Actual vs Predicted', fontweight='bold')
+    ax.set_title('Financial: Actual vs Predicted', fontweight='bold')
+    ax.set_xlabel('Date')
     ax.set_ylabel('S&P 500 Monthly Return')
     ax.legend()
     ax.grid(True, alpha=0.3)
     ax.axhline(0, color='black', linestyle='-', linewidth=0.5, alpha=0.5)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=45)
     
-    # Plot 3: R² Score Comparison
-    ax = axes[1, 0]
-    models = ['Economic', 'Financial']
-    train_r2 = [macro_results['train_metrics']['r2'], sentiment_results['train_metrics']['r2']]
-    test_r2 = [macro_results['test_metrics']['r2'], sentiment_results['test_metrics']['r2']]
+    # # Plot 3: R² Score Comparison
+    # ax = axes[1, 0]
+    # models = ['Economic', 'Financial']
+    # train_r2 = [macro_results['train_metrics']['r2'], sentiment_results['train_metrics']['r2']]
+    # test_r2 = [macro_results['test_metrics']['r2'], sentiment_results['test_metrics']['r2']]
     
-    x = np.arange(len(models))
-    width = 0.35
-    ax.bar(x - width/2, train_r2, width, label='Training', color='steelblue')
-    ax.bar(x + width/2, test_r2, width, label='Testing', color='coral')
-    ax.set_ylabel('R² Score')
-    ax.set_title('Model Performance: R² Score Comparison', fontweight='bold')
-    ax.set_xticks(x)
-    ax.set_xticklabels(models)
-    ax.legend()
-    ax.grid(True, alpha=0.3, axis='y')
+    # x = np.arange(len(models))
+    # width = 0.35
+    # ax.bar(x - width/2, train_r2, width, label='Training', color='steelblue')
+    # ax.bar(x + width/2, test_r2, width, label='Testing', color='coral')
+    # ax.set_ylabel('R² Score')
+    # ax.set_title('Model Performance: R² Score Comparison', fontweight='bold')
+    # ax.set_xticks(x)
+    # ax.set_xticklabels(models)
+    # ax.legend()
+    # ax.grid(True, alpha=0.3, axis='y')
     
-    # Plot 4: RMSE Comparison
-    ax = axes[1, 1]
-    train_rmse = [macro_results['train_metrics']['rmse'], sentiment_results['train_metrics']['rmse']]
-    test_rmse = [macro_results['test_metrics']['rmse'], sentiment_results['test_metrics']['rmse']]
+    # # Plot 4: RMSE Comparison
+    # ax = axes[1, 1]
+    # train_rmse = [macro_results['train_metrics']['rmse'], sentiment_results['train_metrics']['rmse']]
+    # test_rmse = [macro_results['test_metrics']['rmse'], sentiment_results['test_metrics']['rmse']]
     
-    x = np.arange(len(models))
-    ax.bar(x - width/2, train_rmse, width, label='Training', color='steelblue')
-    ax.bar(x + width/2, test_rmse, width, label='Testing', color='coral')
-    ax.set_ylabel('RMSE')
-    ax.set_title('Model Performance: RMSE Comparison', fontweight='bold')
-    ax.set_xticks(x)
-    ax.set_xticklabels(models)
-    ax.legend()
-    ax.grid(True, alpha=0.3, axis='y')
+    # x = np.arange(len(models))
+    # ax.bar(x - width/2, train_rmse, width, label='Training', color='steelblue')
+    # ax.bar(x + width/2, test_rmse, width, label='Testing', color='coral')
+    # ax.set_ylabel('RMSE')
+    # ax.set_title('Model Performance: RMSE Comparison', fontweight='bold')
+    # ax.set_xticks(x)
+    # ax.set_xticklabels(models)
+    # ax.legend()
+    # ax.grid(True, alpha=0.3, axis='y')
     
     plt.tight_layout()
     
