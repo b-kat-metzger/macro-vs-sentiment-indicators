@@ -1,3 +1,4 @@
+# Fredapi key needed in .env
 from data_pipeline import (
     get_fred_client,
     save_raw_fred_and_yf,
@@ -9,7 +10,6 @@ from data_pipeline import (
     prune_to_final_features,
     save_standardized_dataset,
 )
-
 
 def run_pipeline():
     fred = get_fred_client()
@@ -29,7 +29,5 @@ def run_pipeline():
     print(final_df.head())
     print(final_df.tail())
 
-
 if __name__ == "__main__":
     run_pipeline()
-
