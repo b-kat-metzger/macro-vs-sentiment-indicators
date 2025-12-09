@@ -10,8 +10,8 @@ import yfinance as yf
 from fredapi import Fred
 from dotenv import load_dotenv, find_dotenv
 
-# Initial config
 
+# Initial config
 START_DATE = "1992-10-01"
 
 RAW_DIR = Path("data", "raw")
@@ -24,7 +24,6 @@ CLEAN_DIR.mkdir(parents=True, exist_ok=True)
 FRED_SERIES: Dict[str, str] = {
     
     # ECONOMIC INDICATORS:
-    
     # Labor market (2)
     "UNRATE": "Unemployment Rate (m)",
     "ICSA": "Initial Jobless Claims (w)",
@@ -44,9 +43,8 @@ FRED_SERIES: Dict[str, str] = {
     # Housing forward indicator (1)
     "PERMIT": "Building Permits (m)",
 
-
+    
     # FINANCIAL INDICATORS:
-
     "BAA": "Moody's BAA Corporate Bond Yield (d)",  # for credit spread
     "DGS10": "10y Treasury Yield (d)",              # for slope + credit spread
     "DGS3MO": "3m Treasury Yield (d)",              # for slope
@@ -85,6 +83,7 @@ FINAL_FIN_FEATURES: List[str] = [
 
 FINAL_FEATURES = FINAL_ECON_FEATURES + FINAL_FIN_FEATURES
 
+
 # .env + FRED
 def load_api_key() -> str:
     env_path = find_dotenv(usecwd=True) or (Path(__file__).parent / ".env")
@@ -97,6 +96,7 @@ def load_api_key() -> str:
 
 def get_fred_client() -> Fred:
     return Fred(api_key=load_api_key())
+
 
 # Raw data
 def pull_fred_series(series_id: str, client: Fred) -> pd.DataFrame:
@@ -132,6 +132,7 @@ def save_raw_fred_and_yf(client: Fred) -> None:
         df.to_csv(path)
         print(f"Saved Yahoo {symbol} -> {path} ({desc})")
 
+
 # Realized volatility calculation
 def compute_realized_vol(window: int = 30, annual_factor: float = np.sqrt(252)) -> Path:
     gspc_path = RAW_DIR / "yf_GSPC.csv"
@@ -163,6 +164,7 @@ def compute_realized_vol(window: int = 30, annual_factor: float = np.sqrt(252)) 
     print(f"Saved monthly realized volatility (30d) -> {rv_path}")
     return rv_path
 
+
 # Generic CSV loader
 def load_csv(path: Path) -> pd.DataFrame:
     stem = path.stem
@@ -188,8 +190,8 @@ def load_csv(path: Path) -> pd.DataFrame:
 
     return df
 
-########################################
-# MERGE RAW CSVs
+
+# Merge the raw data csv files
 def build_merged_df() -> pd.DataFrame:
     valid_fred_stems = {f"fred_{sid}" for sid in FRED_SERIES.keys()}
     valid_yf_stems = {f"yf_{symbol.replace('^','')}" for symbol in YF_TICKERS.keys()}
@@ -242,6 +244,7 @@ def save_merged_df(full_df: pd.DataFrame) -> Path:
     print(f"Merged DataFrame saved to {merged_path}")
     return merged_path
 
+
 # Standardization of time series data to monthly
 def standardize_to_monthly(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -291,6 +294,7 @@ def standardize_to_monthly(df: pd.DataFrame) -> pd.DataFrame:
 
     return monthly_data
 
+
 # Derived features
 def add_derived_features(monthly_df: pd.DataFrame) -> pd.DataFrame:
     df = monthly_df.copy()
@@ -331,11 +335,13 @@ def add_derived_features(monthly_df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def save_standardized_dataset(df: pd.DataFrame, filename: str = "standardized_monthly_data.csv") -> Path:
     out_path = CLEAN_DIR / filename
     df.to_csv(out_path)
     print(f"Standardized monthly dataset saved to {out_path}")
     return out_path
+
 
 # Trim data at start and for final incomplete month
 def clean_feature_frame(df: pd.DataFrame) -> pd.DataFrame:
