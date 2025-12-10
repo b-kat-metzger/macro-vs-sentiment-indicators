@@ -245,38 +245,6 @@ def plot_results(data, macro_results, sentiment_results, output_dir: Path = None
     ax.axhline(0, color='black', linestyle='-', linewidth=0.5, alpha=0.5)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=45)
     
-    # # Plot 3: R² Score Comparison
-    # ax = axes[1, 0]
-    # models = ['Economic', 'Financial']
-    # train_r2 = [macro_results['train_metrics']['r2'], sentiment_results['train_metrics']['r2']]
-    # test_r2 = [macro_results['test_metrics']['r2'], sentiment_results['test_metrics']['r2']]
-    
-    # x = np.arange(len(models))
-    # width = 0.35
-    # ax.bar(x - width/2, train_r2, width, label='Training', color='steelblue')
-    # ax.bar(x + width/2, test_r2, width, label='Testing', color='coral')
-    # ax.set_ylabel('R² Score')
-    # ax.set_title('Model Performance: R² Score Comparison', fontweight='bold')
-    # ax.set_xticks(x)
-    # ax.set_xticklabels(models)
-    # ax.legend()
-    # ax.grid(True, alpha=0.3, axis='y')
-    
-    # # Plot 4: RMSE Comparison
-    # ax = axes[1, 1]
-    # train_rmse = [macro_results['train_metrics']['rmse'], sentiment_results['train_metrics']['rmse']]
-    # test_rmse = [macro_results['test_metrics']['rmse'], sentiment_results['test_metrics']['rmse']]
-    
-    # x = np.arange(len(models))
-    # ax.bar(x - width/2, train_rmse, width, label='Training', color='steelblue')
-    # ax.bar(x + width/2, test_rmse, width, label='Testing', color='coral')
-    # ax.set_ylabel('RMSE')
-    # ax.set_title('Model Performance: RMSE Comparison', fontweight='bold')
-    # ax.set_xticks(x)
-    # ax.set_xticklabels(models)
-    # ax.legend()
-    # ax.grid(True, alpha=0.3, axis='y')
-    
     plt.tight_layout()
     
     if output_dir:
